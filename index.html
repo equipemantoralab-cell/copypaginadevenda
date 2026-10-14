@@ -172,11 +172,18 @@ const L=t=>(t||"").split("\n").map(s=>s.trim()).filter(Boolean);
 const D=k=>(S.data[k]||"").trim();
 
 /* ============ UI ============ */
+const blockDone=b=>b.f.every(f=>!f.r||D(f.k));
+const isDone=i=>i<LEAD_STEP?blockDone(BLOCKS[i]):i===LEAD_STEP?!!(S.lead.nome&&S.lead.email&&S.lead.tel&&S.out):!!S.out;
 function nav(){
   const subs=["Nome, promessa, prazo e avatar","Dores e ruminação do cliente","Preparação, ação e otimização","O que a pessoa recebe","Resultados e depoimentos","6 situações de identificação","Valores, parcelas e botão","Por que confiar em você","10 respostas prontas para o FAQ","Fechamento da página","Nome, e-mail e telefone","Copy pronta para copiar"];
   const items=BLOCKS.map((b,i)=>[b.t,i]).concat([["Seus dados",LEAD_STEP],["Sua copy",RESULT_STEP]]);
-  $("#nav").innerHTML=items.map(([t,i])=>`<div class="nav ${S.step===i?'on':''} ${i<S.step?'done':''}" data-i="${i}"><i>${i<S.step?'✓':i+1}</i><div>${esc(t)}<small>${esc(subs[i])}</small></div></div>`).join("");
-  document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{const i=+n.dataset.i;if(i<=S.step){S.step=i;render()}});
+  $("#nav").innerHTML=items.map(([t,i])=>`<div class="nav ${S.step===i?'on':''} ${isDone(i)?'done':''}" data-i="${i}" ${i===RESULT_STEP&&!S.out?'style="opacity:.45;cursor:not-allowed"':''}><i>${isDone(i)?'✓':i+1}</i><div>${esc(t)}<small>${esc(subs[i])}</small></div></div>`).join("");
+  document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{
+    const i=+n.dataset.i;
+    if(i===RESULT_STEP&&!S.out)return;
+    if(i===LEAD_STEP&&!BLOCKS.every(blockDone)){S.step=BLOCKS.findIndex(b=>!blockDone(b));render();return}
+    S.step=i;render();
+  });
 }
 function render(){
   save();nav();window.scrollTo(0,0);
