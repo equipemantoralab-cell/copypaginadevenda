@@ -181,7 +181,6 @@ function nav(){
   document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{
     const i=+n.dataset.i;
     if(i===RESULT_STEP&&!S.out)return;
-    if(i===LEAD_STEP&&!BLOCKS.every(blockDone)){S.step=BLOCKS.findIndex(b=>!blockDone(b));render();return}
     S.step=i;render();
   });
 }
@@ -221,6 +220,13 @@ function renderLead(head){
     if(!/^\S+@\S+\.\S+$/.test(S.lead.email||"")){$("#email").classList.add("bad");ok=false}
     if((S.lead.tel||"").replace(/\D/g,"").length<10){$("#tel").classList.add("bad");ok=false}
     if(!ok)return;
+    const miss=BLOCKS.findIndex(b=>!blockDone(b));
+    if(miss>=0){
+      $("#msg")?.remove();
+      $(".btns").insertAdjacentHTML("beforebegin",`<div id="msg" style="margin-top:22px;padding:14px 16px;border:1.5px solid var(--err);border-radius:12px;color:var(--err);font-size:14px;line-height:1.5">Ainda faltam respostas obrigatórias no bloco <b>${miss+1}. ${esc(BLOCKS[miss].t)}</b>. <a href="#" id="gm" style="color:var(--p);font-weight:600">Ir para esse bloco</a></div>`);
+      $("#gm").onclick=e=>{e.preventDefault();S.step=miss;render();BLOCKS[miss].f.forEach(f=>{if(f.r&&!D(f.k))$("#"+f.k).classList.add("bad")});$(".bad")?.scrollIntoView({block:"center"})};
+      return;
+    }
     S.out=generate();S.step=RESULT_STEP;
     sendLead();render();
   };
