@@ -44,6 +44,7 @@ button.s{padding:7px 14px;font-size:12.5px}
 .sec header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
 .sec h3{font-size:15px;color:var(--p)}
 .sec textarea{min-height:150px;line-height:1.55}
+.jump{display:none;width:100%;margin:-12px 0 22px;padding:11px 14px;border:1.5px solid var(--bd);border-radius:12px;background:#fff;font:inherit;font-size:14px;color:var(--tx)}
 .mh{display:none;background:var(--navy);margin:-22px -16px 22px;padding:16px}
 .bd{margin-top:36px;border-radius:18px;overflow:hidden;color:#fff;padding:26px 22px;background:radial-gradient(120% 80% at 80% 30%,#2a1060 0%,#150833 45%,#0d0420 100%)}
 .bd-full{min-height:calc(100vh - 72px);display:flex;flex-direction:column;justify-content:space-between;padding:32px 28px}
@@ -66,7 +67,7 @@ button.s{padding:7px 14px;font-size:12.5px}
 .bd-grid span:nth-last-of-type(-n+2){border-bottom:0}
 .bd a.cta{display:flex;justify-content:space-between;align-items:center;background:var(--p2);color:#fff;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:.06em;padding:20px 22px;margin-bottom:22px}
 .bd .tx{color:#cfc7e6;line-height:1.7;font-size:15px;font-weight:300}
-@media(max-width:820px){.mh{display:block}#hero .bd-full{margin:0 -16px 30px;padding:28px 22px}}
+@media(max-width:820px){.jump{display:block}.mh{display:block}body.res .mh{display:none}#hero .bd-full{margin:-22px -16px 28px;padding:22px 20px}#hero .bd-full h2{font-size:25px;margin-bottom:16px}#hero .bd-full{justify-content:center}#hero .bd-top{margin-bottom:28px}#hero .bd-top img{height:24px}.bd-live{padding:9px 12px;font-size:11px}.bd-tag{gap:10px;margin-bottom:16px}.bd-tag b{padding:8px 12px;font-size:11px}.bd-tag span{font-size:10.5px}.bd-k{font-size:10.5px;margin-bottom:10px}.bd-grid{margin-bottom:16px}.bd-grid p{font-size:15px;padding:14px 16px}.bd-grid span{padding:12px 16px;font-size:11px}.bd a.cta{padding:16px 18px;font-size:12px;margin-bottom:16px}.bd .tx{font-size:13.5px;line-height:1.6}h1{font-size:25px}.btns{flex-wrap:wrap}.sec{padding:16px}.hero button{flex:1}}
 .hero{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 @media(max-width:820px){aside{display:none}main{padding:22px 16px 80px}}
 </style>
@@ -189,10 +190,11 @@ function nav(){
   });
 }
 function render(){
+  document.body.classList.toggle("res",S.step===RESULT_STEP);
   $("#hero").innerHTML="";
   save();nav();window.scrollTo(0,0);
   const pct=Math.round(S.step/(RESULT_STEP)*100);
-  const head=`<div class="top"><span>${S.step<LEAD_STEP?`Bloco ${S.step+1} de ${BLOCKS.length}`:S.step===LEAD_STEP?'Quase lá':'Pronto!'}</span><span>${pct}%</span></div><div class="bar"><div style="width:${pct}%"></div></div>`;
+  const head=`<div class="top"><span>${S.step<LEAD_STEP?`Bloco ${S.step+1} de ${BLOCKS.length}`:S.step===LEAD_STEP?'Quase lá':'Pronto!'}</span><span>${pct}%</span></div><div class="bar"><div style="width:${pct}%"></div></div><select id="jump" class="jump">${BLOCKS.map((b,i)=>`<option value="${i}" ${S.step===i?"selected":""}>${i+1}. ${esc(b.t)}</option>`).join("")}<option value="${LEAD_STEP}" ${S.step===LEAD_STEP?"selected":""}>Seus dados</option>${S.out?`<option value="${RESULT_STEP}">Sua copy</option>`:""}</select>`;
   if(S.step<LEAD_STEP) return renderBlock(head);
   if(S.step===LEAD_STEP) return renderLead(head);
   renderResult();
@@ -249,7 +251,7 @@ function renderResult(){
   <div class="hero"><button id="all">Copiar tudo</button><button class="g" id="dl">Baixar .txt</button><button class="g" id="rs">Refazer do zero</button></div>`+
   o.map((s,i)=>`<div class="sec"><header><h3>${i+1}. ${esc(s.t)}</h3><button class="s g" data-c="${i}">Copiar</button></header><textarea data-i="${i}">${esc(s.x)}</textarea></div>`).join("");
   $("#app").insertAdjacentHTML("beforeend",`<div class="sec" style="border-color:var(--p2);border-width:2px"><header><h3>Prompt para gerar o seu site</h3><button class="s" id="cp">Copiar prompt</button></header><div class="hp" style="margin-bottom:10px">Cole este prompt no Claude, no ChatGPT, no Lovable, no v0 ou na plataforma que preferir. Ele já leva toda a sua copy e a estrutura de cada dobra.</div><div class="hero"><button class="s g" id="oc">Abrir Claude</button><button class="s g" id="og">Abrir ChatGPT</button></div><textarea id="pr" style="min-height:260px"></textarea></div>`);
-  $("#hero").innerHTML=(`<section class="bd bd-full"><div class="bd-top"><img src="assets/logo-branco.png" alt="Mantora"><span class="bd-live">NO AR</span></div><div class="bd-body"><div class="bd-tag"><b>CANAL 01</b><span>INFOPRODUTOR E MENTOR</span></div><div class="bd-k">COBERTURA DE PERPÉTUOS &amp; LANÇAMENTOS</div><h2>O palco e o microfone são seus. A produção das suas vendas, no perpétuo ou no lançamento, é nossa.</h2><div class="bd-grid"><p>Assumimos 100% da estratégia e da operação do seu infoproduto.</p><span>COPY</span><span>TRÁFEGO</span><span>ESTRATÉGIA</span><span>PÁGINAS</span></div><a class="cta" href="https://mantoralab.com.br" target="_blank" rel="noopener"><span>QUERO ESCALAR MEU INFOPRODUTO</span><span>→</span></a><p class="tx">O especialista que mais cresce não é o que tenta fazer a direção, ajustar o tráfego e apresentar o show ao mesmo tempo. É aquele que decide estar apenas onde só ele pode estar: entregando conteúdo transformador, gerando conexão e fechando negócios.</p></div></section>`);
+  $("#hero").innerHTML=(`<section class="bd bd-full"><div class="bd-top"><img src="assets/logo-branco.png" alt="Mantora"><span class="bd-live">NO AR</span></div><div class="bd-body"><div class="bd-tag"><b>CANAL 01</b><span>INFOPRODUTOR E MENTOR</span></div><div class="bd-k">COBERTURA DE PERPÉTUOS &amp; LANÇAMENTOS</div><h2>O palco e o microfone são seus. A produção das suas vendas, no perpétuo ou no lançamento, é nossa.</h2><div class="bd-grid"><p>Assumimos 100% da estratégia e da operação do seu infoproduto.</p><span>COPY</span><span>TRÁFEGO</span><span>ESTRATÉGIA</span><span>PÁGINAS</span></div><a class="cta" href="https://wa.me/5513992016680?text=Oi%2C%20vim%20pela%20gerador%20de%20copy%20de%20de%20vendas%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener"><span>QUERO ESCALAR MEU INFOPRODUTO</span><span>→</span></a><p class="tx">O especialista que mais cresce não é o que tenta fazer a direção, ajustar o tráfego e apresentar o show ao mesmo tempo. É aquele que decide estar apenas onde só ele pode estar: entregando conteúdo transformador, gerando conexão e fechando negócios.</p></div></section>`);
   const fit=()=>{const b=$(".bd-full");if(b)b.style.minHeight=Math.max(560,innerHeight-(b.getBoundingClientRect().top+scrollY))+"px"};
   fit();onresize=fit;
   $("#pr").value=buildPrompt(o);$("#pr").style.height="320px";
@@ -330,6 +332,7 @@ function generate(){
    {t:"Dobra 14 · Rodapé",x:`© ${new Date().getFullYear()} ${D("criador")}. Todos os direitos reservados.`}
   ];
 }
+document.addEventListener("change",e=>{if(e.target.id==="jump"){S.step=+e.target.value;render()}});
 render();
 </script>
 </body>
