@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gerador de Copy de Página de Vendas</title>
+<style>
+:root{--navy:#14072a;--navy2:#1d0b3d;--p:#582aab;--p2:#704bfd;--p3:#400958;--bg:#f6f4fb;--card:#fff;--tx:#1a1230;--mut:#6b6482;--bd:#e4def2;--ok:#1c9a62;--err:#d6336c}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,system-ui,Segoe UI,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex}
+aside{width:270px;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:24px 18px;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:28px}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--p2);display:grid;place-items:center;font-weight:800}
+.brand b{display:block;font-size:16px}.brand small{font-size:10px;letter-spacing:.12em;color:#b9a9e8;text-transform:uppercase}
+aside h6{font-size:10px;letter-spacing:.14em;color:#9a88d4;margin:0 0 10px;text-transform:uppercase}
+.nav{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;font-size:13px;color:#cfc4f0;cursor:pointer;border:1px solid transparent;margin-bottom:4px}
+.nav i{font-style:normal;width:24px;height:24px;border-radius:7px;border:1px solid #4a3a7c;display:grid;place-items:center;font-size:11px;flex-shrink:0}
+.nav small{display:block;font-size:11px;color:#9a88d4;margin-top:2px;line-height:1.3}
+.nav.on small{color:#d9ceff}
+.nav.on{background:rgba(112,75,253,.18);border-color:var(--p2);color:#fff}
+.nav.on i{background:var(--p2);border-color:var(--p2)}
+.nav.done i{background:var(--ok);border-color:var(--ok)}
+main{flex:1;min-width:0;padding:36px 24px 80px}
+.wrap{max-width:720px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px;flex-wrap:wrap}
+.top span{font-size:13px;color:var(--mut)}
+.bar{height:6px;background:var(--bd);border-radius:9px;overflow:hidden;margin-bottom:28px}
+.bar div{height:100%;background:linear-gradient(90deg,var(--p),var(--p2));transition:width .3s}
+h1{font-size:30px;margin-bottom:6px}h1 em{color:var(--p2)}
+.sub{color:var(--mut);margin-bottom:26px;line-height:1.5}
+.f{margin-bottom:22px}
+label{font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center}
+label .rq{color:var(--err)}
+.hp{font-size:12.5px;color:var(--mut);margin:3px 0 7px;line-height:1.4}
+input,textarea{width:100%;font:inherit;font-size:14.5px;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--p2);box-shadow:0 0 0 3px rgba(112,75,253,.15)}
+.bad{border-color:var(--err)!important}
+.btns{display:flex;justify-content:space-between;margin-top:34px;gap:10px}
+button{font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px 24px;cursor:pointer;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+button.g{background:#fff;color:var(--p);border:1.5px solid var(--bd)}
+button.s{padding:7px 14px;font-size:12.5px}
+.sec{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:18px}
+.sec header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+.sec h3{font-size:15px;color:var(--p)}
+.sec textarea{min-height:150px;line-height:1.55}
+.hero{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+@media(max-width:820px){aside{display:none}main{padding:22px 16px 80px}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><div class="logo">M</div><div><b>Copy de Vendas</b><small>Mantora Lab</small></div></div>
+  <h6>Etapas</h6>
+  <div id="nav"></div>
+</aside>
+<main><div class="wrap" id="app"></div></main>
+
+<script>
+/* ============ CONFIG ============ */
+// Cole aqui a URL de um webhook (n8n, Zapier, Make, Google Apps Script) para receber os leads. Vazio = só salva no navegador.
+const WEBHOOK_URL = "";
+
+/* ============ QUESTIONÁRIO ============ */
+const BLOCKS = [
+ {t:"O produto", d:"Comece pelo básico: o que você vende, para quem e qual a promessa.", f:[
+  {k:"produto",l:"Nome do produto",h:"Como o seu produto se chama?",ph:"Ex.: Receitas Fit em 15 Minutos",r:1},
+  {k:"promessa",l:"Promessa principal",h:"O resultado que a pessoa vai ter. Comece com um verbo no infinitivo.",ph:"Ex.: emagrecer sem passar fome",r:1},
+  {k:"prazo",l:"Prazo",h:"Em quanto tempo o resultado acontece? Use um número.",ph:"Ex.: 30 dias",r:1},
+  {k:"avatar",l:"Avatar específico",h:"Quem é a pessoa? Seja bem específico.",ph:"Ex.: mulheres que trabalham o dia todo e não têm tempo de cozinhar",r:1},
+  {k:"b1",l:"Benefício 1",h:"Prático e tangível, focado no resultado.",ph:"Ex.: Cardápio pronto para o mês inteiro",r:1},
+  {k:"b2",l:"Benefício 2",h:"Outro benefício concreto.",ph:"Ex.: Compras de supermercado em 10 minutos",r:1}]},
+ {t:"Público e dor", d:"O que a pessoa sente hoje. Use a linguagem dela.", f:[
+  {k:"objetivo",l:"Objetivo principal",h:"O que ela mais quer conseguir. Verbo no infinitivo.",ph:"Ex.: emagrecer",r:1},
+  {k:"dor1",l:"Dor ou objeção 1",h:"Específica e na voz do cliente.",r:1},
+  {k:"dor2",l:"Dor ou objeção 2",r:1},
+  {k:"dor3",l:"Dor ou objeção 3",r:1},
+  {k:"dor4",l:"Dor ou objeção 4",r:1},
+  {k:"dor5",l:"Dor ou objeção 5",r:1},
+  {k:"ruminacao",l:"Ruminação interna",h:"O que ela pensa sozinha, em primeira pessoa. Uma frase por linha.",a:"lines",ph:"Será que eu tenho força de vontade?\nPor que com as outras pessoas funciona e comigo não?",r:1},
+  {k:"desejado",l:"Resultado desejado",h:"O que ela quer ter, no lugar da situação atual.",ph:"Ex.: um corpo leve e saudável",r:1},
+  {k:"situacao",l:"Situação atual ruim",h:"O que ela continua vivendo hoje.",ph:"Ex.: vivendo de dieta e se sentindo culpada",r:1},
+  {k:"problema",l:"Problema principal",h:"Complete: \"Você não quer mais carregar essa...\"",ph:"Ex.: frustração de começar dieta e desistir",r:1}]},
+ {t:"A solução em 3 passos", d:"O caminho que leva ao resultado: preparação, ação principal e otimização.", f:[
+  {k:"p1n",l:"Passo 1: nome (preparação)",h:"A base de tudo.",ph:"Ex.: Cardápio inteligente",r:1},
+  {k:"p1e",l:"Passo 1: problema que resolve",h:"Explique em uma ou duas frases.",a:1,r:1},
+  {k:"p1b",l:"Passo 1: o que a pessoa vai aprender",h:"Complete: \"Você vai aprender...\"",ph:"Ex.: a montar refeições rápidas e saciantes",r:1},
+  {k:"p1c",l:"Passo 1: consequência de pular este passo",h:"Complete: \"Sem este passo, ...\"",ph:"Ex.: você acaba improvisando e desistindo",r:1},
+  {k:"p1r",l:"Passo 1: benefício resumido",r:1},
+  {k:"p2n",l:"Passo 2: nome (ação principal)",h:"O coração do método.",r:1},
+  {k:"p2b",l:"Passo 2: o que a pessoa vai ter",h:"Complete: \"Você vai ter...\"",r:1},
+  {k:"p2p",l:"Passo 2: problema que deixa de existir",h:"Complete: \"Nada de...\"",ph:"Ex.: contar caloria",r:1},
+  {k:"p2v",l:"Passo 2: vantagem principal",h:"Complete: \"...é...\"",ph:"Ex.: comer bem sem esforço",r:1},
+  {k:"p3n",l:"Passo 3: nome (otimização)",h:"Como ajustar e manter o resultado.",r:1},
+  {k:"p3e",l:"Passo 3: benefício principal",h:"Explique em uma ou duas frases.",a:1,r:1},
+  {k:"p3d",l:"Passo 3: entregável específico",h:"Complete: \"Receba...\"",ph:"Ex.: uma planilha de acompanhamento",r:1},
+  {k:"p3o",l:"Passo 3: objeção comum que ele elimina",h:"Complete: \"...sem...\"",ph:"Ex.: precisar de academia",r:1},
+  {k:"periodo",l:"Período",h:"Complete: \"...a cada...\"",ph:"Ex.: semana",r:1}]},
+ {t:"Entregáveis e bônus", d:"O que a pessoa recebe. Preencha pelo menos 4 e, se quiser, até 6.", f:[
+  {k:"e1",l:"Entregável 1",h:"Formato: Nome | descrição do benefício e como ajuda | valor",ph:"Cardápio de 30 dias | acaba com a dúvida do que comer todo dia | R$ 97",r:1},
+  {k:"e2",l:"Entregável 2",h:"Nome | descrição | valor",r:1},
+  {k:"e3",l:"Entregável 3",h:"Nome | descrição | valor",r:1},
+  {k:"e4",l:"Entregável 4",h:"Nome | descrição | valor",r:1},
+  {k:"e5",l:"Entregável 5 (opcional)",h:"Nome | descrição | valor"},
+  {k:"e6",l:"Entregável 6 (opcional)",h:"Nome | descrição | valor"},
+  {k:"bonus",l:"Bônus especial (opcional)",h:"Nome | diferencial exclusivo | valor"}]},
+ {t:"Prova social", d:"Resultados reais geram confiança.", f:[
+  {k:"resultado",l:"Resultado principal",h:"O que as pessoas conseguiram, com número se possível.",ph:"Ex.: 6 kg a menos em 30 dias",r:1},
+  {k:"casos",l:"Casos de sucesso",h:"Um por linha.",a:"lines",ph:"Marina perdeu 6 kg em 30 dias\nCarla zerou a ansiedade com comida",r:1},
+  {k:"dep1",l:"Depoimento 1",h:"Texto do cliente e o nome dele.",a:1,ph:"\"Mudou minha rotina.\" - Marina, 34 anos",r:1},
+  {k:"dep2",l:"Depoimento 2",h:"Texto do cliente e o nome dele.",a:1,r:1}]},
+ {t:"Você se identifica?", d:"6 situações que fazem o cliente pensar \"isso é comigo\".", f:[
+  {k:"ident",l:"6 situações do avatar",h:"Uma por linha, em linguagem natural.",a:"lines",ph:"Já tentou emagrecer mais de 3 vezes\nTem pouco tempo para cozinhar",r:1}]},
+ {t:"A oferta", d:"Valores, parcelamento e botão.", f:[
+  {k:"total",l:"Valor total do produto",h:"A soma de tudo, que \"deveria custar\".",ph:"Ex.: R$ 647",r:1},
+  {k:"acesso",l:"Tipo de acesso",ph:"Ex.: Acesso Vitalício ao Programa Completo",r:1},
+  {k:"parcelas",l:"Parcelamento",ph:"Ex.: 12x de R$ 6,90",r:1},
+  {k:"avista",l:"Valor à vista",ph:"Ex.: R$ 67",r:1},
+  {k:"cta",l:"Texto do botão (CTA)",h:"Específico sobre a ação.",ph:"Ex.: QUERO COMEÇAR AGORA",r:1}]},
+ {t:"Autoridade do criador", d:"Por que acreditar em você.", f:[
+  {k:"criador",l:"Nome do criador",r:1},
+  {k:"cred",l:"Credenciais e experiência",h:"Relevantes para o seu nicho.",a:1,r:1},
+  {k:"dif",l:"Diferencial ou método único",a:1,r:1},
+  {k:"missao",l:"Missão ou propósito",a:1,r:1},
+  {k:"frase",l:"Frase de impacto",h:"Uma frase pessoal e marcante.",r:1}]},
+ {t:"Perguntas frequentes", d:"Responda as 10 dúvidas clássicas. As perguntas já estão prontas, você escreve só as respostas.", f:[
+  {k:"f1",l:"O pagamento é seguro?",h:"Resposta tranquilizadora.",a:1,r:1},
+  {k:"f2",l:"Como e quando recebo o acesso?",h:"Área de membros, e-mail...",a:1,r:1},
+  {k:"f3",l:"Quais as formas de pagamento?",h:"Pix, cartão, sem mensalidade...",a:1,r:1},
+  {k:"f4",l:"Preciso ter experiência?",h:"Resposta inclusiva.",a:1,r:1},
+  {k:"f5",l:"Preciso de algum equipamento ou recurso?",a:1,r:1},
+  {k:"f6",l:"Quanto tempo preciso dedicar?",h:"Realista e motivadora.",a:1,r:1},
+  {k:"f7",l:"Em quanto tempo vejo resultados?",h:"Prazo específico.",a:1,r:1},
+  {k:"f8",l:"Funciona para casos mais difíceis?",h:"Foque no diferencial do método.",a:1,r:1},
+  {k:"f9",l:"Existe algum plano complementar?",a:1,r:1},
+  {k:"f10",l:"Por quanto tempo terei acesso?",a:1,r:1}]},
+ {t:"Urgência e futuro", d:"O fechamento da página.", f:[
+  {k:"frust",l:"Situação frustrante comum",h:"O que acontece toda vez que a pessoa tenta.",a:1,r:1},
+  {k:"errados",l:"Métodos incorretos que ela segue",h:"Complete: \"Você está seguindo...\"",ph:"Ex.: dietas genéricas que não cabem na sua rotina",r:1},
+  {k:"transf",l:"Transformação principal",h:"Complete: \"Foi feito especificamente para isso...\"",ph:"Ex.: emagrecer comendo bem, sem sofrimento",r:1},
+  {k:"estilo",l:"Estilo visual do site (opcional)",h:"Cores, clima e referências. Vai só para o prompt de criação do site, não aparece na copy.",a:1,ph:"Ex.: tons de verde e branco, visual leve e feminino, parecido com sites de bem-estar"}]}
+];
+const LEAD_STEP = BLOCKS.length, RESULT_STEP = BLOCKS.length+1;
+
+/* ============ ESTADO ============ */
+let S = {step:0, data:{}, lead:{}, out:null};
+try{ const x=JSON.parse(localStorage.getItem("copyapp")||"null"); if(x) S=Object.assign(S,x);}catch(e){}
+const save=()=>{try{localStorage.setItem("copyapp",JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const L=t=>(t||"").split("\n").map(s=>s.trim()).filter(Boolean);
+const D=k=>(S.data[k]||"").trim();
+
+/* ============ UI ============ */
+function nav(){
+  const subs=["Nome, promessa, prazo e avatar","Dores e ruminação do cliente","Preparação, ação e otimização","O que a pessoa recebe","Resultados e depoimentos","6 situações de identificação","Valores, parcelas e botão","Por que confiar em você","10 respostas prontas para o FAQ","Fechamento da página","Nome, e-mail e telefone","Copy pronta para copiar"];
+  const items=BLOCKS.map((b,i)=>[b.t,i]).concat([["Seus dados",LEAD_STEP],["Sua copy",RESULT_STEP]]);
+  $("#nav").innerHTML=items.map(([t,i])=>`<div class="nav ${S.step===i?'on':''} ${i<S.step?'done':''}" data-i="${i}"><i>${i<S.step?'✓':i+1}</i><div>${esc(t)}<small>${esc(subs[i])}</small></div></div>`).join("");
+  document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{const i=+n.dataset.i;if(i<=S.step){S.step=i;render()}});
+}
+function render(){
+  save();nav();window.scrollTo(0,0);
+  const pct=Math.round(S.step/(RESULT_STEP)*100);
+  const head=`<div class="top"><span>${S.step<LEAD_STEP?`Bloco ${S.step+1} de ${BLOCKS.length}`:S.step===LEAD_STEP?'Quase lá':'Pronto!'}</span><span>${pct}%</span></div><div class="bar"><div style="width:${pct}%"></div></div>`;
+  if(S.step<LEAD_STEP) return renderBlock(head);
+  if(S.step===LEAD_STEP) return renderLead(head);
+  renderResult();
+}
+function renderBlock(head){
+  const b=BLOCKS[S.step];
+  $("#app").innerHTML=head+`<h1>${esc(b.t)}</h1><p class="sub">${esc(b.d)}</p>`+b.f.map(f=>{
+    const v=esc(S.data[f.k]||"");
+    const inp=(f.a)?`<textarea id="${f.k}" rows="${f.a==="lines"?4:3}" placeholder="${esc(f.ph||"")}">${v}</textarea>`:`<input id="${f.k}" value="${v}" placeholder="${esc(f.ph||"")}">`;
+    return `<div class="f"><label>${esc(f.l)}${f.r?'<span class="rq">*</span>':''}</label>${f.h?`<div class="hp">${esc(f.h)}</div>`:''}${inp}</div>`;
+  }).join("")+`<div class="btns"><button class="g" id="bk" ${S.step?'':'style="visibility:hidden"'}>Voltar</button><button id="nx">${S.step===LEAD_STEP-1?'Continuar':'Próximo'}</button></div>`;
+  b.f.forEach(f=>$("#"+f.k).oninput=e=>{S.data[f.k]=e.target.value;e.target.classList.remove("bad");save()});
+  $("#bk").onclick=()=>{S.step--;render()};
+  $("#nx").onclick=()=>{
+    let bad=null;b.f.forEach(f=>{if(f.r&&!D(f.k)){$("#"+f.k).classList.add("bad");bad=bad||f.k}});
+    if(bad){$("#"+bad).scrollIntoView({block:"center"});return}
+    S.step++;render();
+  };
+}
+function renderLead(head){
+  const fs=[["nome","Nome completo","text"],["email","E-mail","email"],["tel","Telefone / WhatsApp","tel"]];
+  $("#app").innerHTML=head+`<h1>Seus <em>dados</em></h1><p class="sub">Informe seus dados para liberar a copy completa da sua página de vendas.</p>`+
+   fs.map(([k,l,t])=>`<div class="f"><label>${l}<span class="rq">*</span></label><input id="${k}" type="${t}" value="${esc(S.lead[k]||"")}"></div>`).join("")+
+   `<div class="btns"><button class="g" id="bk">Voltar</button><button id="nx">Gerar minha copy</button></div>`;
+  fs.forEach(([k])=>$("#"+k).oninput=e=>{S.lead[k]=e.target.value;e.target.classList.remove("bad");save()});
+  $("#bk").onclick=()=>{S.step--;render()};
+  $("#nx").onclick=async()=>{
+    let ok=true;
+    if(!S.lead.nome?.trim()){$("#nome").classList.add("bad");ok=false}
+    if(!/^\S+@\S+\.\S+$/.test(S.lead.email||"")){$("#email").classList.add("bad");ok=false}
+    if((S.lead.tel||"").replace(/\D/g,"").length<10){$("#tel").classList.add("bad");ok=false}
+    if(!ok)return;
+    S.out=generate();S.step=RESULT_STEP;
+    sendLead();render();
+  };
+}
+async function sendLead(){
+  const payload={...S.lead,produto:D("produto"),data:new Date().toISOString()};
+  try{const l=JSON.parse(localStorage.getItem("leads")||"[]");l.push(payload);localStorage.setItem("leads",JSON.stringify(l))}catch(e){}
+  if(WEBHOOK_URL){try{await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})}catch(e){}}
+}
+function renderResult(){
+  const o=S.out||(S.out=generate());
+  $("#app").innerHTML=`<div class="top"><span>Pronto!</span><span>100%</span></div><div class="bar"><div style="width:100%"></div></div>
+  <h1>Sua copy está <em>pronta</em>, ${esc((S.lead.nome||"").split(" ")[0])}</h1>
+  <p class="sub">Edite o que quiser em cada seção e cole na sua página de vendas.</p>
+  <div class="hero"><button id="all">Copiar tudo</button><button class="g" id="dl">Baixar .txt</button><button class="g" id="rs">Refazer do zero</button></div>`+
+  o.map((s,i)=>`<div class="sec"><header><h3>${i+1}. ${esc(s.t)}</h3><button class="s g" data-c="${i}">Copiar</button></header><textarea data-i="${i}">${esc(s.x)}</textarea></div>`).join("");
+  $("#app").insertAdjacentHTML("beforeend",`<div class="sec" style="border-color:var(--p2);border-width:2px"><header><h3>Prompt para gerar o seu site</h3><button class="s" id="cp">Copiar prompt</button></header><div class="hp" style="margin-bottom:10px">Cole este prompt no Claude, no ChatGPT, no Lovable, no v0 ou na plataforma que preferir. Ele já leva toda a sua copy e a estrutura de cada dobra.</div><div class="hero"><button class="s g" id="oc">Abrir Claude</button><button class="s g" id="og">Abrir ChatGPT</button></div><textarea id="pr" style="min-height:260px"></textarea></div>`);
+  $("#pr").value=buildPrompt(o);$("#pr").style.height="320px";
+  $("#cp").onclick=async e=>{await navigator.clipboard.writeText(buildPrompt(o));$("#pr").value=buildPrompt(o);flash(e.target,"Copiado!")};
+  $("#oc").onclick=()=>window.open("https://claude.ai/new","_blank");
+  $("#og").onclick=()=>window.open("https://chatgpt.com/","_blank");
+  document.querySelectorAll("textarea[data-i]").forEach(t=>{t.style.height=(t.scrollHeight+4)+"px";t.oninput=()=>{o[+t.dataset.i].x=t.value;save()}});
+  const flash=(b,t)=>{const o=b.textContent;b.textContent=t;setTimeout(()=>b.textContent=o,1200)};
+  document.querySelectorAll("[data-c]").forEach(b=>b.onclick=async()=>{await navigator.clipboard.writeText(o[+b.dataset.c].x);flash(b,"Copiado!")});
+  const full=()=>o.map(s=>s.x).join("\n\n\n\n");
+  $("#all").onclick=async e=>{await navigator.clipboard.writeText(full());flash(e.target,"Copiado!")};
+  $("#dl").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([full()],{type:"text/plain;charset=utf-8"}));a.download="copy-pagina-de-vendas.txt";a.click()};
+  $("#rs").onclick=()=>{if(confirm("Apagar respostas e começar de novo?")){S={step:0,data:{},lead:{},out:null};render()}};
+}
+
+/* ============ PROMPT PARA O SITE ============ */
+const VISUAIS=[
+ "Mockup ou imagem de antes e depois do resultado prometido.",
+ "Área de depoimentos e casos de sucesso (prints ou cards com foto).",
+ "Imagem da pessoa (avatar) sofrendo com os pensamentos da ruminação interna, ao lado do texto.",
+ "Uma imagem por passo (3 imagens), antes de cada passo.",
+ "Texto e imagens intercalados; inclua um mockup dos entregáveis e destaque o bônus com uma estrela.",
+ "Lista com ícones de check e um aviso em destaque no final.",
+ "Mockup dos produtos acima da lista; preço em destaque e botão grande.",
+ "Foto profissional do criador ao lado do texto.",
+ "Bloco de oferta com botão grande.",
+ "Seção de texto direto, em destaque, com fundo diferente.",
+ "Repita aqui a mesma imagem de resultado (antes e depois) da primeira dobra.",
+ "FAQ em formato de acordeão (clica para abrir a resposta).",
+ "Bloco de oferta com botão grande.",
+ "Rodapé simples e discreto."
+];
+function buildPrompt(o){
+  const est=D("estilo")?`\nESTILO VISUAL DESEJADO: ${D("estilo")}\n`:"\nESTILO VISUAL: moderno, limpo e profissional; escolha uma paleta coerente com o nicho do produto.\n";
+  return `Você é um desenvolvedor front-end e designer especialista em páginas de vendas de alta conversão. Crie uma página de vendas completa (landing page de uma única página, responsiva, com foco em mobile) para o produto "${D("produto")}".
+
+REGRAS DA PÁGINA
+- A página tem 14 dobras (seções), na ordem abaixo, e o texto de cada uma é exatamente o que vem em "TEXTO". Não reescreva, não resuma e não invente textos.
+- Tom conversacional, parágrafos curtos, leitura fácil no celular.
+- O botão de compra (CTA) deve aparecer nas dobras 7, 9 e 13, e também no final da dobra 1, mantendo sempre o mesmo texto.
+- Onde houver emoji no texto, mantenha-o.
+- Onde indicado "IMAGEM", deixe um espaço de imagem (placeholder) bem identificado, com proporção correta, para eu trocar depois.
+- Use contraste alto, botões grandes, fontes legíveis e animações sutis de entrada.
+- Entregue o código completo e pronto para publicar (HTML, CSS e JS), em um único arquivo se possível.
+${est}
+ESTRUTURA E TEXTO
+
+${o.map((s,i)=>`### ${s.t}\nIMAGEM/DESIGN: ${VISUAIS[i]}\nTEXTO:\n${s.x}`).join("\n\n")}
+
+Ao terminar, me diga como publicar a página e onde colocar o link de checkout nos botões.`;
+}
+
+/* ============ GERADOR DE COPY ============ */
+function item(k){const [n,d,v]=D(k).split("|").map(s=>(s||"").trim());return n?{n,d,v}:null}
+const money=v=>v?("R$"+v.replace(/^R\$\s*/i,"")):"";
+function generate(){
+  const p=D("produto"),pr=D("promessa"),cta=D("cta");
+  const its=["e1","e2","e3","e4","e5","e6"].map(item).filter(Boolean),bn=item("bonus");
+  const offer=()=>`${D("acesso")}\n\nVocê só paga esse valor uma vez!\n\nDe: ${D("total")}\nPor apenas:\n\n${D("parcelas")}\nou ${D("avista")} à vista\n\n${cta}\n\nCondição por tempo limitado.`;
+  const faqQ=[
+   "O pagamento é seguro?","Como e quando recebo o acesso?","Quais as formas de pagamento?","Preciso ter experiência?",
+   "Preciso de algum equipamento ou recurso?","Quanto tempo preciso dedicar?","Em quanto tempo vejo resultados?",
+   `O ${p} funciona para casos mais difíceis?`,"Existe algum plano complementar?","Por quanto tempo terei acesso?"];
+  return [
+   {t:"Dobra 1 · Headline principal",x:`${p}\n\n${pr}\nem até ${D("prazo")} com este passo a passo\n\n🎯 ${D("b1")}\n⏳ ${D("b2")}\n✅ Para ${D("avatar")}`},
+   {t:"Dobra 2 · Prova social",x:`${D("resultado").toUpperCase()} DE ${D("avatar").toUpperCase()} QUE SEGUIRAM O PASSO A PASSO\n\n${L(D("casos")).map(r=>"★ "+r).join("\n")}\n\n${D("dep1")}\n\n${D("dep2")}`},
+   {t:"Dobra 3 · Agitação e dor",x:`Conforme o tempo passa, você sente que ${D("objetivo")} fica mais difícil...\n\n${L(D("ruminacao")).map(r=>`"${r}"`).join("\n")}\n\n${[1,2,3,4,5].map(i=>"❌ "+D("dor"+i)).join("\n")}\n\nÉ triste passar por isso, né?\n\nAo invés de ${D("desejado")}, continua ${D("situacao")}.\n\nTenho certeza que você não quer mais carregar essa ${D("problema")}, certo?`},
+   {t:"Dobra 4 · Solução em 3 passos",x:`Siga esses 3 passos para você ${pr}:\n\nPASSO 1\n${D("p1n")}\n\n${D("p1e")}\nVocê vai aprender ${D("p1b")}.\nSem ${D("p1n")}, ${D("p1c")}.\n\n${D("p1r")}\n\n\nPASSO 2\n${D("p2n")}\n\nVocê vai ter ${D("p2b")}.\nNada de ${D("p2p")} — é ${D("p2v")}.\n\n\nPASSO 3\n${D("p3n")}\n\n${D("p3e")}\nReceba ${D("p3d")} para ${pr} sem ${D("p3o")}.\n\n\nE para facilitar esses 3 passos e conseguir ${pr} a cada ${D("periodo")}:`},
+   {t:"Dobra 5 · Entregáveis",x:its.map(i=>`${i.n}\n${i.d}`).join("\n\n")+(bn?`\n\n${bn.n} ★\n${bn.d}`:"")},
+   {t:"Dobra 6 · Identificação do avatar",x:`O ${p} é para você que…\n\n${L(D("ident")).map(r=>"✅ "+r).join("\n")}\n\n⚠️ Se você se identifica com 2 ou mais itens da lista, o ${p} é para você!`},
+   {t:"Dobra 7 · Oferta e preço",x:`Resumindo tudo que você vai receber para ${pr}:\n\n${its.map(i=>`${i.n} — ${money(i.v)}`).join("\n")}${bn?`\n${bn.n} ★ — ${money(bn.v)}`:""}\n\nO ${p} inteiro deveria custar ${D("total")}.\n\nMas hoje você consegue ter acesso ao programa completo por apenas:\n\n${D("acesso")}\n\nVocê só paga esse valor uma vez!\n\n${D("parcelas")}\nou ${D("avista")} à vista\n\n${cta}\n\nCondição por tempo limitado, acesso imediato.`},
+   {t:"Dobra 8 · Autoridade do criador",x:`${D("criador")} é o criador do ${p}.\n\n${D("cred")}\n\n${D("dif")}\n\n${D("missao")}\n\n"${D("frase")}"`},
+   {t:"Dobra 9 · Repetição da oferta",x:offer()},
+   {t:"Dobra 10 · Urgência e escassez",x:`...COM TODO RESPEITO E SINCERIDADE!\n\nQuantas vezes você já tentou ${D("objetivo")}?\n\n${D("frust")}\n\nO problema não é você. É que você está seguindo ${D("errados")}.\n\nO ${p} foi feito especificamente para isso: ${D("transf")}.\n\nPare de tentar. Comece a conquistar.`},
+   {t:"Dobra 11 · Visão de futuro",x:`Já existe uma versão sua com ${D("desejado")}!\n\nAgora você só precisa conhecê-la.`},
+   {t:"Dobra 12 · Perguntas frequentes",x:"PERGUNTAS FREQUENTES\n\n"+faqQ.map((q,i)=>`${q}\n${D("f"+(i+1))}`).join("\n\n")},
+   {t:"Dobra 13 · CTA final",x:offer()},
+   {t:"Dobra 14 · Rodapé",x:`© ${new Date().getFullYear()} ${D("criador")}. Todos os direitos reservados.`}
+  ];
+}
+render();
+</script>
+</body>
+</html>
