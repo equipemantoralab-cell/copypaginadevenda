@@ -68,6 +68,18 @@ button.s{padding:7px 14px;font-size:12.5px}
 .bd a.cta{display:flex;justify-content:space-between;align-items:center;background:var(--p2);color:#fff;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:.06em;padding:20px 22px;margin-bottom:22px}
 .bd .tx{color:#cfc7e6;line-height:1.7;font-size:15px;font-weight:300}
 @media(max-width:820px){.jump{display:block}.mh{display:block}body.res .mh{display:none}#hero .bd-full{margin:-22px -16px 28px;padding:22px 20px}#hero .bd-full h2{font-size:25px;margin-bottom:16px}#hero .bd-full{justify-content:center}#hero .bd-top{margin-bottom:28px}#hero .bd-top img{height:24px}.bd-live{padding:9px 12px;font-size:11px}.bd-tag{gap:10px;margin-bottom:16px}.bd-tag b{padding:8px 12px;font-size:11px}.bd-tag span{font-size:10.5px}.bd-k{font-size:10.5px;margin-bottom:10px}.bd-grid{margin-bottom:16px}.bd-grid p{font-size:15px;padding:14px 16px}.bd-grid span{padding:12px 16px;font-size:11px}.bd a.cta{padding:16px 18px;font-size:12px;margin-bottom:16px}.bd .tx{font-size:13.5px;line-height:1.6}h1{font-size:25px}.btns{flex-wrap:wrap}.sec{padding:16px}.hero button{flex:1}}
+.client-carousel{width:100%;margin-top:30px;overflow:hidden}
+.client-carousel__viewport{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%)}
+.client-carousel__track{display:flex;gap:14px;width:max-content;animation:client-marquee 34s linear infinite;will-change:transform}
+.client-carousel__set{display:flex;gap:14px}
+.client-carousel__card{flex:0 0 clamp(126px,10.5vw,146px);width:clamp(126px,10.5vw,146px);margin:0;min-width:0;text-align:center}
+.client-carousel__photo{width:clamp(82px,8.5vw,116px);aspect-ratio:1;margin:0 auto;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#1d0b3d;box-shadow:0 14px 34px -22px rgba(112,75,253,.85);transform:translateZ(0)}
+.client-carousel__photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s}
+.client-carousel__card:hover .client-carousel__photo img{transform:scale(1.055);filter:saturate(1.08)}
+.client-carousel__handle{display:block;margin-top:9px;font-size:clamp(9px,.72vw,11px);line-height:1.25;letter-spacing:.015em;color:rgba(255,255,255,.76);white-space:nowrap}
+@keyframes client-marquee{to{transform:translateX(calc(-50% - 7px))}}
+@media(max-width:560px){.client-carousel__track,.client-carousel__set{gap:10px}.client-carousel__card{flex-basis:126px;width:126px}.client-carousel__photo{width:78px;border-radius:14px}.client-carousel__handle{font-size:9px;margin-top:8px}@keyframes client-marquee{to{transform:translateX(calc(-50% - 5px))}}}
+@media(prefers-reduced-motion:reduce){.client-carousel__viewport{overflow-x:auto;scrollbar-width:none;-webkit-mask-image:none;mask-image:none}.client-carousel__track{animation:none}.client-carousel__set[aria-hidden="true"]{display:none}}
 .hero{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
 @media(max-width:820px){aside{display:none}main{padding:22px 16px 80px}}
 </style>
@@ -251,7 +263,7 @@ function renderResult(){
   <div class="hero"><button id="all">Copiar tudo</button><button class="g" id="dl">Baixar .txt</button><button class="g" id="rs">Refazer do zero</button></div>`+
   o.map((s,i)=>`<div class="sec"><header><h3>${i+1}. ${esc(s.t)}</h3><button class="s g" data-c="${i}">Copiar</button></header><textarea data-i="${i}">${esc(s.x)}</textarea></div>`).join("");
   $("#app").insertAdjacentHTML("beforeend",`<div class="sec" style="border-color:var(--p2);border-width:2px"><header><h3>Prompt para gerar o seu site</h3><button class="s" id="cp">Copiar prompt</button></header><div class="hp" style="margin-bottom:10px">Cole este prompt no Claude, no ChatGPT, no Lovable, no v0 ou na plataforma que preferir. Ele já leva toda a sua copy e a estrutura de cada dobra.</div><div class="hero"><button class="s g" id="oc">Abrir Claude</button><button class="s g" id="og">Abrir ChatGPT</button></div><textarea id="pr" style="min-height:260px"></textarea></div>`);
-  $("#hero").innerHTML=(`<section class="bd bd-full"><div class="bd-top"><img src="assets/logo-branco.png" alt="Mantora"></div><div class="bd-body"><div class="bd-k">COBERTURA DE PERPÉTUOS &amp; LANÇAMENTOS</div><h2>O palco e o microfone são seus. A produção das suas vendas, no perpétuo ou no lançamento, é nossa.</h2><div class="bd-grid"><p>Assumimos 100% da estratégia e da operação do seu infoproduto.</p><span>COPY</span><span>TRÁFEGO</span><span>ESTRATÉGIA</span><span>PÁGINAS</span></div><a class="cta" href="https://wa.me/5513992016680?text=Oi%2C%20vim%20pela%20gerador%20de%20copy%20de%20de%20vendas%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener"><span>QUERO ESCALAR MEU INFOPRODUTO</span><span>→</span></a><p class="tx">O especialista que mais cresce não é o que tenta fazer a direção, ajustar o tráfego e apresentar o show ao mesmo tempo. É aquele que decide estar apenas onde só ele pode estar: entregando conteúdo transformador, gerando conexão e fechando negócios.</p></div></section>`);
+  $("#hero").innerHTML=(`<section class="bd bd-full"><div class="bd-top"><img src="assets/logo-branco.png" alt="Mantora"></div><div class="bd-body"><div class="bd-k">COBERTURA DE PERPÉTUOS &amp; LANÇAMENTOS</div><h2>O palco e o microfone são seus. A produção das suas vendas, no perpétuo ou no lançamento, é nossa.</h2><div class="bd-grid"><p>Assumimos 100% da estratégia e da operação do seu infoproduto.</p><span>COPY</span><span>TRÁFEGO</span><span>ESTRATÉGIA</span><span>PÁGINAS</span></div><a class="cta" href="https://wa.me/5513992016680?text=Oi%2C%20vim%20pela%20gerador%20de%20copy%20de%20de%20vendas%20e%20gostaria%20de%20saber%20mais." target="_blank" rel="noopener"><span>QUERO ESCALAR MEU INFOPRODUTO</span><span>→</span></a><p class="tx">O especialista que mais cresce não é o que tenta fazer a direção, ajustar o tráfego e apresentar o show ao mesmo tempo. É aquele que decide estar apenas onde só ele pode estar: entregando conteúdo transformador, gerando conexão e fechando negócios.</p>${carousel()}</div></section>`);
   const fit=()=>{const b=$(".bd-full");if(b)b.style.minHeight=Math.max(560,innerHeight-(b.getBoundingClientRect().top+scrollY))+"px"};
   fit();onresize=fit;
   $("#pr").value=buildPrompt(o);$("#pr").style.height="320px";
@@ -265,6 +277,14 @@ function renderResult(){
   $("#all").onclick=async e=>{await navigator.clipboard.writeText(full());flash(e.target,"Copiado!")};
   $("#dl").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([full()],{type:"text/plain;charset=utf-8"}));a.download="copy-pagina-de-vendas.txt";a.click()};
   $("#rs").onclick=()=>{if(confirm("Apagar respostas e começar de novo?")){S={step:0,data:{},lead:{},out:null};render()}};
+}
+
+/* ============ CARROSSEL DE CLIENTES ============ */
+const CLIENT_IMG="assets/clientes/";
+const CLIENTS=[["dra-januzzi","Dra. Jannuzzi","@drajannuzzi"],["laercio","Laércio Refundini","@laerciorefundini"],["hosaka","Hosaka Personal","@hosaka__"],["paycon-automacoes","Paycon Automações","@payconautomacoes"],["paycon-rh","Paycon RH","@payconrh"],["thiago","Thiago Palma","@automacoes_juridicas"],["gabi","Gabi Perdomo","@reguladascomgabi"],["denise","Denise Entrudo","@nutrideniseentrudo"],["bruna","Dra. Bruna Cavalcante","@drabrunabc"],["carlao","Carlão Silva","@oficial_carlaopersonal"],["cris","Cris Alberti","@cristianealbertii"]];
+function carousel(){
+  const set=hid=>`<div class="client-carousel__set"${hid?' aria-hidden="true"':''}>${CLIENTS.map(([f,n,h])=>`<figure class="client-carousel__card"><div class="client-carousel__photo"><img src="${CLIENT_IMG}${f}.webp" alt="${hid?'':esc(n)}" width="360" height="360" draggable="false"></div><figcaption class="client-carousel__handle">${esc(h)}</figcaption></figure>`).join("")}</div>`;
+  return `<section class="client-carousel" aria-label="Clientes Mantora"><div class="client-carousel__viewport"><div class="client-carousel__track">${set(0)}${set(1)}</div></div></section>`;
 }
 
 /* ============ PROMPT PARA O SITE ============ */
